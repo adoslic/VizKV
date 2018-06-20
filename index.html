@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>UEFA Euro</title>
+		<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+		<script src="//d3js.org/topojson.v1.min.js"></script>
+		
+		
+		
+		<style type="text/css">
+			body {
+			  background-color: #F1F3F3    
+			}
+			svg {
+				background-color: white;
+			}
+			h1 {
+				color: rgb(115, 115, 115);
+				font-size: 18px;
+				font-family: sans-serif;
+				font-weight: bold;
+				margin: 0;
+				padding-bottom: 10px;
+			}
+			#container {
+				width: 800px;
+				margin-left: auto;
+				margin-right: auto;
+				margin-top: 20px;
+				padding: 20px;
+				background-color: white;
+				box-shadow: 1px 1px 1px 2px rgb(217, 217, 217);
+			}
+			path:hover {
+				fill: rgba(8, 81, 156, 0.2);
+				cursor:pointer;
+			}
+			
+			ul {
+				list-style-type: none;
+				margin: auto;
+				width: 50%;
+				padding: 0;
+				overflow: hidden;
+				background-color: #6B97C4;
+			}
+
+			li {
+				float: left;
+				margin-left: 7%;
+			}
+
+			li a {
+				display: block;
+				
+				color: white;
+				text-align: center;
+				padding: 14px 16px;
+				text-decoration: none;
+			}
+
+			li a:hover:not(.active) {
+				background-color: rgba(8, 81, 156, 0.2);
+			}
+
+			.active {
+				background-color: rgba(8, 81, 156, 0.2);
+			}
+			.toolTip {
+			  position: absolute;
+			  display: none;
+			  min-width: 80px;
+			  height: auto;
+			  background: none repeat scroll 0 0 #ffffff;
+			  border: 1px solid #6B97C4;
+			  padding: 14px;
+			  text-align: center;
+			}
+		</style>
+	</head>
+	<body>
+	<div class="button">
+		<ul>
+		  <li><a href="broj_titula.html">Titule</a></li>
+		  <li><a href="golovi.html">Golovi</a></li>
+		  <li><a href="domacini.html">Domacini</a></li>
+		  <li><a href="plasman.html">Najbolji plasman</a></li>
+		  <li><a href="broj_timova.html">Prikaz po godinama</a></li>
+		</ul>
+	</div>
+	<div id="container">
+	</div>
+	<span> </span>	
+
+		<script type="text/javascript">
+			//Width and height
+			var w = 800;
+			var h = 600;
+			//Define map projection
+			var projection = d3.geo.mercator()
+								   .center([ 13, 52 ]) //kako centrirati kartu, dužinu i širinu
+								   .translate([ w/2, h/2 ]) // središte rezultirajuće slike u svg
+								   .scale([ w/1.5 ]); // zumiranje, što je manja vrijednost, to je veći zoom 
+			//Define path generator
+			var path = d3.geo.path()
+							 .projection(projection);
+			//Create SVG
+			var svg = d3.select("#container")
+						.append("svg")
+						.attr("width", w)
+						.attr("height", h);
+			//oblačić			
+			var tooltip = d3.select("body").append("div").attr("class", "toolTip");			
+			//Load in GeoJSON data
+			d3.json("europe.json", function(json) {
+				
+				//Bind data and create one path per GeoJSON feature
+				svg.selectAll("path")
+				   .data(json.features)
+				   .enter()
+				   .append("path")
+				   .on("mouseover", function(d){
+				   tooltip
+					  .style("left", d3.event.pageX - 50 + "px")
+					  .style("top", d3.event.pageY - 70 + "px")
+					  .style("display", "inline-block")
+					  .html(d.properties.sovereignt);
+					})
+					.on("mouseout", function(d){ 
+						tooltip.style("display", "none");
+						})
+					.attr("d", path)
+				   .attr("stroke", "rgba(8, 81, 156, 0.2)")
+				   .attr("fill", "rgba(8, 81, 156, 0.6)");
+		
+			});
+			
+		</script>
+	</body>
+</html>
+
